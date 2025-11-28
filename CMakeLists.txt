@@ -5,8 +5,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_BUILD_TYPE Release)
 
-# Add module in charge of finding TensorRT
+#使用cmake文件夹下的FindTensorRT.cmake（默认TensorRT在/usr/下，比如Jetson）
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+
+#如果在/usr下找不到，则手动设置TensorRT_DIR，Jetson可以不管这里
+if (NOT TensorRT_DIR)
+    set(TensorRT_DIR /home/ad/TensorRT-10.7.0.23/)
+endif()
 
 find_package(CUDA REQUIRED)
 find_package(TensorRT REQUIRED)

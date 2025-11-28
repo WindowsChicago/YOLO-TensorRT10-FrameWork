@@ -9,7 +9,7 @@
 enum class Models {
     YOLOv8,
     YOLOv10,
-    YOLOv5A  // 新增
+    YOLOv5A  
 };
 
 

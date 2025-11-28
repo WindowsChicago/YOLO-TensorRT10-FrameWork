@@ -1,10 +1,23 @@
-# yolo-tensorrt
-Optimization of YOLOv8 and YOLOv10 inference with TensorRT.
+# YOLO-TensorRT10-Detect-Framework
+#### by ZYL
 
-### Dependencies
+### TensorRT10 YOLO C++ 高性能目标检测推理框架
+
+### 支持推理：
+
+- YOLOv5/X/v8/v10/v11的标准/魔改版目标检测模型
+- 无需pt文件，只要是能够通过trtexec转换为engine的onnx即可
+- 低代码量，容易扩展模型和标签格式支持
+
+### 支持设备：
+
+- 带NVIDIA独显（MAXWELL架构之后的）的x86架构的PC
+- Jetson Orin 系列（不支持XAVIER及以前的Jetson）
+
+### 依赖：
 - TensorRT >= 10.2.0
 - CUDA >= 11.8
-- Opencv >= 4.8.0
+- OpenCV (with CUDA)>= 4.8.0
 
 ### Build
 (Optional) build the docker image to avoid managing dependencies
@@ -40,4 +53,6 @@ Example:
 The model had also no problem to run on a video :
 
 ![Alt Text](.assets/output_video.gif)
-
+M1:添加对yolo5的支持（深大的装甲板识别模型特化支持）
+M2:修复新增的yolov5模型推理坐标的放缩错误
+M3:修改CmakeLists.txt，修改调用TensorRT的方式

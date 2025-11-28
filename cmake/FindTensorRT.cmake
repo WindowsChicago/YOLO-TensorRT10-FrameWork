@@ -1,5 +1,6 @@
-# Inspired by https://github.com/NVIDIA/tensorrt-laboratory/blob/master/cmake/FindTensorRT.cmake
-#
+# source:
+# https://github.com/NVIDIA/tensorrt-laboratory/blob/master/cmake/FindTensorRT.cmake
+
 # This module defines the following variables:
 #
 # ::
@@ -17,32 +18,36 @@
 #
 # Hints
 # ^^^^^
-# A user may set ``TensorRT_ROOT`` to an installation root to tell this module where to look.
+# A user may set ``TensorRT_DIR`` to an installation root to tell this module where to look.
 #
 set(_TensorRT_SEARCHES)
 
-if(TensorRT_ROOT)
-  set(_TensorRT_SEARCH_ROOT PATHS ${TensorRT_ROOT} NO_DEFAULT_PATH)
-  list(APPEND _TensorRT_SEARCHES _TensorRT_SEARCH_ROOT)
+if(TensorRT_DIR)
+    set(_TensorRT_SEARCH_ROOT PATHS ${TensorRT_DIR} NO_DEFAULT_PATH)
+    list(APPEND _TensorRT_SEARCHES _TensorRT_SEARCH_ROOT)
 endif()
 
 # appends some common paths
 set(_TensorRT_SEARCH_NORMAL
-  PATHS "/home/ad/TensorRT-10.7.0.23"
-)
+        PATHS "/usr"
+        )
 list(APPEND _TensorRT_SEARCHES _TensorRT_SEARCH_NORMAL)
 
 # Include dir
 foreach(search ${_TensorRT_SEARCHES})
-  find_path(TensorRT_INCLUDE_DIR NAMES NvInfer.h ${${search}} PATH_SUFFIXES include)
+    find_path(TensorRT_INCLUDE_DIR NAMES NvInfer.h ${${search}} PATH_SUFFIXES include)
 endforeach()
 
 if(NOT TensorRT_LIBRARY)
-  foreach(search ${_TensorRT_SEARCHES})
-    # Find both nvinfer and nvonnxparser libraries
-    find_library(TensorRT_LIBRARY NAMES nvinfer ${${search}} PATH_SUFFIXES lib)
-    find_library(TensorRT_ONNX_LIBRARY NAMES nvonnxparser ${${search}} PATH_SUFFIXES lib)
-  endforeach()
+    foreach(search ${_TensorRT_SEARCHES})
+        find_library(TensorRT_LIBRARY NAMES nvinfer ${${search}} PATH_SUFFIXES lib)
+    endforeach()
+endif()
+
+if(NOT TensorRT_NVONNXPARSER_LIBRARY)
+    foreach(search ${_TensorRT_SEARCHES})
+        find_library(TensorRT_NVONNXPARSER_LIBRARY NAMES nvonnxparser ${${search}} PATH_SUFFIXES lib)
+    endforeach()
 endif()
 
 mark_as_advanced(TensorRT_INCLUDE_DIR)
@@ -62,16 +67,15 @@ include(FindPackageHandleStandardArgs)
 FIND_PACKAGE_HANDLE_STANDARD_ARGS(TensorRT REQUIRED_VARS TensorRT_LIBRARY TensorRT_INCLUDE_DIR VERSION_VAR TensorRT_VERSION_STRING)
 
 if(TensorRT_FOUND)
-  set(TensorRT_INCLUDE_DIRS ${TensorRT_INCLUDE_DIR})
+    set(TensorRT_INCLUDE_DIRS ${TensorRT_INCLUDE_DIR})
 
-  if(NOT TensorRT_LIBRARIES)
-    set(TensorRT_LIBRARIES ${TensorRT_LIBRARY} ${TensorRT_ONNX_LIBRARY})
-  endif()
+    if(NOT TensorRT_LIBRARIES)
+        set(TensorRT_LIBRARIES ${TensorRT_LIBRARY} ${TensorRT_NVONNXPARSER_LIBRARY} ${TensorRT_NVPARSERS_LIBRARY})
+    endif()
 
-  if(NOT TARGET TensorRT::TensorRT)
-    add_library(TensorRT::TensorRT UNKNOWN IMPORTED)
-    set_target_properties(TensorRT::TensorRT PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${TensorRT_INCLUDE_DIRS}")
-    set_property(TARGET TensorRT::TensorRT APPEND PROPERTY IMPORTED_LOCATION "${TensorRT_LIBRARY}")
-    set_property(TARGET TensorRT::TensorRT APPEND PROPERTY IMPORTED_LOCATION "${TensorRT_ONNX_LIBRARY}")
-  endif()
+    if(NOT TARGET TensorRT::TensorRT)
+        add_library(TensorRT::TensorRT UNKNOWN IMPORTED)
+        set_target_properties(TensorRT::TensorRT PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${TensorRT_INCLUDE_DIRS}")
+        set_property(TARGET TensorRT::TensorRT APPEND PROPERTY IMPORTED_LOCATION "${TensorRT_LIBRARY}")
+    endif()
 endif()

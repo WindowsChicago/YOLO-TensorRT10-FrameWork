@@ -20,8 +20,8 @@ const std::array<std::string, 4> YOLOv5A::kColorNames = {
 };
 
 const std::array<cv::Scalar, 4> YOLOv5A::kColorColors = {
+    cv::Scalar(255, 0, 0),   // blue 
     cv::Scalar(0, 0, 255),   // red
-    cv::Scalar(255, 0, 0),   // blue  
     cv::Scalar(128, 128, 128), // gray
     cv::Scalar(128, 0, 128)  // purple
 };
